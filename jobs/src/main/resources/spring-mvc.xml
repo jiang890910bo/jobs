@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:mvc="http://www.springframework.org/schema/mvc"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans    
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd    
+                        http://www.springframework.org/schema/context    
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd    
+                        http://www.springframework.org/schema/mvc    
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    
+    <!-- 自动扫描包, 使得springMVC认为包下使用@Controller注解的类都是控制器-->
+    <context:component-scan base-package="com.jiangbo.ssm.controller"/>
+    <!-- 解析试图的驱动，如不配置，访问controller时路径无法解析到controller -->
+    <mvc:annotation-driven/>
+    
+    <!-- 在spring4.x中请用org.springframework.http.converter.json.MappingJackson2HttpMessageConverter代替。 -->
+    <!-- 避免IE执行AJAX时，返回JSON出现下载文件 -->
+     <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+    	<property name="supportedMediaTypes">
+    		<list>
+    			<value>text/html;charset=utf-8</value>
+    		</list>
+    	</property>
+    </bean>
+    
+    <!-- 启动springMVC的注解功能，完成请求和注解POJO的映射 -->
+     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    	<property name="messageConverters">
+    		<list>
+    			<ref bean="mappingJacksonHttpMessageConverter"/>
+    		</list>
+    	</property>
+    </bean>
+    
+    <!-- 定义试图跳转的前后追，试图模式配置 -->
+ <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+    
+     <!-- 对静态支援的访问 -->
+	<mvc:resources mapping="/images/**" location="/images/"/>  
+	<mvc:resources mapping="/js/**" location="/js/"/>  
+	<mvc:resources mapping="/css/**" location="/css/"/> 
+	
+	
+    <!-- 拦截器，实现接口org.springframework.web.servlet.handler.HandlerInterceptorAdapter -->  
+<!--       <mvc:interceptors>
+	    <mvc:interceptor>
+	    	&lt;!&ndash;  <mvc:mapping path="/**"/>&ndash;&gt;&lt;!&ndash; 拦截所有 &ndash;&gt;
+	    	<mvc:mapping path="/**/*.html"/>&lt;!&ndash; 拦截所有已后缀.html的url &ndash;&gt;
+	    	<mvc:mapping path="/user/*"/>&lt;!&ndash; 拦截http:域名/user/*的url,如：http://localhost:8080/ssm/user/showUser.htm &ndash;&gt;
+	    	
+	   		<bean class="com.jiangbo.ssm.interceptor.MyInterceptor" />
+	    </mvc:interceptor>
+	</mvc:interceptors>-->
+	
+	
+	<!-- 配置文件上传 -->
+ 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 配置编码 -->
+		<property name="defaultEncoding" value="utf-8"/>
+		<!-- 文件最大值 -->
+		<property name="maxUploadSize" value="10485760000"/>
+		<!-- 内存中最大值 -->
+		<property name="maxInMemorySize" value="40960"></property>
+	</bean>
+</beans>
